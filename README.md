@@ -1,52 +1,231 @@
 # MyEngineeringTeam Crew
 
-Welcome to the MyEngineeringTeam Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+Добро пожаловать в проект **MyEngineeringTeam Crew** — автоматизированную систему разработки на базе [crewAI](https://crewai.com), которая превращает требования в готовый код с помощью команды специализированных AI-агентов.
 
-## Installation
+## 🎯 О проекте
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
+**MyEngineeringTeam** — это многоагентная AI-система, которая автоматически проектирует, разрабатывает и создает пользовательский интерфейс для Python-приложений на основе ваших текстовых требований. 
 
-First, if you haven't already, install uv:
+### Что делает проект?
 
-```bash
-pip install uv
+Система принимает на вход:
+- **Текстовое описание требований** к приложению (например, "создать игру Змейка")
+- **Название модуля** и **класса**
+
+И автоматически генерирует:
+1. **Детальный дизайн-документ** в формате Markdown
+2. **Полностью рабочий Python-модуль** с backend-логикой
+3. **Простой UI (app.py)** для демонстрации функциональности
+
+### 🤖 Команда AI-агентов
+
+Проект использует три специализированных AI-агента, работающих последовательно:
+
+#### 1. **Engineering Lead** (Технический руководитель)
+- **Роль**: Руководит командой разработки
+- **Задача**: Анализирует требования и создает детальный технический дизайн
+- **Результат**: Markdown-документ с описанием классов, методов и архитектуры
+- **LLM**: Google Gemini 2.5 Pro (через OpenRouter)
+
+#### 2. **Backend Engineer** (Backend-разработчик)
+- **Роль**: Python-разработчик, пишущий чистый код
+- **Задача**: Реализует дизайн в виде самодостаточного Python-модуля
+- **Особенности**: 
+  - Следует best practices: SOLID, DRY, KISS, PEP, YAGNI, BDUF, APO
+  - Встроенное выполнение и тестирование кода (Code Interpreter)
+  - Безопасный режим выполнения через Docker
+- **Результат**: Готовый к использованию Python-модуль
+- **LLM**: Claude Sonnet 4 (через OpenRouter)
+
+#### 3. **Frontend Engineer** (Frontend-разработчик)
+- **Роль**: Специалист по UI
+- **Задача**: Создает простой, но функциональный интерфейс для демонстрации backend
+- **Особенности**: 
+  - Все UI-элементы функциональны (никаких dummy-кнопок)
+  - Создает автономный файл app.py
+  - Импортирует и использует backend-класс
+- **Результат**: Рабочий прототип с пользовательским интерфейсом
+- **LLM**: Claude Sonnet 4 (через OpenRouter)
+
+### 📋 Пример использования
+
+В текущей конфигурации проект создает **игру "Змейка"** (Snake):
+
+```python
+requirements = """
+Создать игру Snake где:
+- Игрок управляет змейкой
+- Змейка растет при поедании еды
+- Игра заканчивается при столкновении с границами или телом
+- Отображается счет
+- Минималистичная графика
+"""
+
+module_name = "Snake.py"
+class_name = "Snake"
 ```
 
-Next, navigate to your project directory and install the dependencies:
+**Результат работы:**
+- `output/Snake_design.md` — технический дизайн игры
+- `output/Snake.py` — полностью рабочий модуль с логикой игры
+- `output/app.py` — UI для запуска и игры
 
-(Optional) Lock the dependencies and install them by using the CLI command:
-```bash
-crewai install
-```
-### Customizing
+## 🚀 Установка и настройка
 
-**Add your `OPENAI_API_KEY` into the `.env` file**
+### Требования
 
-- Modify `src/my_engineering_team/config/agents.yaml` to define your agents
-- Modify `src/my_engineering_team/config/tasks.yaml` to define your tasks
-- Modify `src/my_engineering_team/crew.py` to add your own logic, tools and specific args
-- Modify `src/my_engineering_team/main.py` to add custom inputs for your agents and tasks
+- Python >=3.10 <3.14
+- Docker (для безопасного выполнения кода агентами)
 
-## Running the Project
-
-To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
+### Шаг 1: Клонирование и настройка окружения
 
 ```bash
-$ crewai run
+# Создайте и активируйте виртуальное окружение
+python3 -m venv .venv
+source .venv/bin/activate  # MacOS/Linux
+# или
+.\.venv\Scripts\activate  # Windows
 ```
 
-This command initializes the my_engineering_team Crew, assembling the agents and assigning them tasks as defined in your configuration.
+### Шаг 2: Установка зависимостей
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+```bash
+pip install 'crewai[tools]'
+```
 
-## Understanding Your Crew
+### Шаг 3: Конфигурация API-ключей
 
-The my_engineering_team Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+Создайте файл `.env` в корне проекта:
 
-## Support
+```env
+# Для работы через OpenRouter (рекомендуется)
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 
-For support, questions, or feedback regarding the MyEngineeringTeam Crew or crewAI.
-- Visit  [documentation](https://docs.crewai.com)
-- [Chat with CrewAI docs](https://chatg.pt/DWjSBZn)
+# Альтернатива: локальные модели через Ollama
+# OPENAI_API_BASE='http://localhost:11434/v1'
+# OPENAI_MODEL_NAME='qwen2.5-coder:14b'
+# OPENAI_API_KEY='ollama'
+```
 
-Let's create wonders together with the power and simplicity of crewAI.
+#### Настройка OpenRouter (рекомендуется)
+
+Проект настроен для работы через [OpenRouter](https://openrouter.ai/), что позволяет использовать мощные модели:
+- **Engineering Lead**: Gemini 2.5 Pro
+- **Backend/Frontend Engineers**: Claude Sonnet 4
+
+#### Альтернатива: Локальные модели Ollama
+
+В `crew.py` закомментированы настройки для работы с локальными моделями:
+
+```bash
+# Установите Ollama
+ollama pull qwen3:14b
+ollama pull qwen2.5-coder:14b
+```
+
+Раскомментируйте соответствующие строки в `crew.py`.
+
+## 💻 Использование
+
+### Запуск проекта
+
+```bash
+crewai run
+```
+
+Или напрямую:
+
+```bash
+python src/my_engineering_team/main.py
+```
+
+### Настройка под свои требования
+
+Отредактируйте файл `src/my_engineering_team/main.py`:
+
+```python
+requirements = """
+Ваши требования к проекту здесь...
+"""
+module_name = "YourModule.py"
+class_name = "YourClass"
+```
+## ⚙️ Конфигурация агентов
+Отредактируйте файлы в  `src/my_engineering_team/config/`
+### agents.yaml
+
+Определяет роли, цели и предысторию каждого агента. Каждый агент получает переменные:
+- `{requirements}` — текстовые требования
+- `{module_name}` — имя выходного модуля
+- `{class_name}` — имя основного класса
+
+### tasks.yaml
+
+Описывает задачи с параметрами:
+- `description` — детальное описание задачи
+- `expected_output` — формат ожидаемого результата
+- `context` — зависимости от других задач
+- `output_file` — путь для сохранения результата
+
+### Процесс работы
+
+1. **Engineering Lead** анализирует требования → создает `output/{module_name}_design.md`
+2. **Backend Engineer** читает дизайн → пишет и тестирует код → создает `output/{module_name}`
+3. **Frontend Engineer** читает код → создает UI → генерирует `output/app.py`
+
+### Важные особенности
+
+- ✅ **Автоматическая очистка**: Агенты удаляют markdown-разметку, теги `<think>` и backticks из кода
+- ✅ **Встроенное тестирование**: Backend Engineer тестирует код перед сохранением
+- ✅ **Безопасное выполнение**: Код выполняется в изолированном Docker-контейнере
+- ✅ **Полная автономность**: Сгенерированный код готов к запуску без правок
+
+## 📁 Структура проекта
+
+```
+my_engineering_team/
+├── output/                     # Результаты работы агентов
+│   ├── {module_name}_design.md # Технический дизайн
+│   ├── {module_name}           # Backend-модуль
+│   └── app.py                  # Frontend UI
+├── src/my_engineering_team/
+│   ├── config/
+│   │   ├── agents.yaml         # Конфигурация агентов
+│   │   └── tasks.yaml          # Конфигурация задач
+│   ├── crew.py                 # Определение команды
+│   └── main.py                 # Точка входа и требования
+└── .env                        # API-ключи
+```
+
+## 🎮 Пример: Игра Snake
+
+Текущая конфигурация создает полнофункциональную игру "Змейка" в :
+
+**Требования включают:**
+- Игровое поле с границами
+- Змейка с управлением через стрелки/WASD
+- Рост змейки при поедании еды
+- Систему подсчета очков
+- Условия проигрыша
+- Возможность перезапуска
+- Минималистичную графику
+
+**Результат:** Готовая к запуску игра в двух файлах (логика + UI). см. `src/my_engineering_team/output/` 
+
+## 🛠️ Best Practices
+
+> **💡 Совет:** Начинайте с простых проектов (1-2 класса, базовая функциональность) и постепенно усложняйте требования.
+
+> **💡 Совет:** Используйте `verbose=True` для отладки — вы увидите полный процесс рассуждений агентов.
+
+> **💡 Совет:** Формулируйте требования максимально конкретно, указывая желаемые функции и ограничения.
+
+> **💡 Совет:** Проверяйте файл дизайна перед генерацией кода — он покажет, правильно ли агент понял требования.
+
+## 📚 Вопросы и поддержка
+
+- [Документация CrewAI](https://docs.crewai.com)
+- [Чат с документацией](https://chatg.pt/DWjSBZn)
+- [OpenRouter API](https://openrouter.ai/)
+
+---
